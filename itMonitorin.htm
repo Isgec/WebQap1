@@ -1,0 +1,31 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+  <script type="text/javascript">
+
+  	var itMon = {
+  		cNo: 0,
+  		tOut: 2000,
+  		sWin: '',
+  		aUrls: 'http://192.9.200.150/webPerk1,http://192.9.200.150/webTutos1,http://192.9.200.150/webAtnd1,http://192.9.200.150/webTools1,http://192.9.200.150/webIdms1'.split(','),
+  		Start: function() {
+  			itMon.sWin = window.open(itMon.aUrls[itMon.cNo] , 'wMon', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0,scrollbars=0');
+  			setTimeout('itMon.urlShown()', itMon.tOut);
+  		},
+  		urlShown: function() {
+  			itMon.cNo = itMon.cNo + 1;
+  			if(itMon.cNo>=itMon.aUrls.length)
+  				itMon.cNo=0;
+  			itMon.Start();
+  		}
+  	}
+  	itMon.Start();
+  </script>
+    
+</head>
+<body>
+
+</body>
+</html>

@@ -1,0 +1,105 @@
+Imports System
+Imports System.Collections.Generic
+Imports System.Data
+Imports System.Data.SqlClient
+Imports System.ComponentModel
+Namespace SIS.QAP
+  <DataObject()> _
+  Partial Public Class qapReviewerAttachments
+    Inherits SIS.QAP.qapAttachments
+    <DataObjectMethod(DataObjectMethodType.Select)> _
+    Public Shared Function qapReviewerAttachmentsGetNewRecord() As SIS.QAP.qapReviewerAttachments
+      Return New SIS.QAP.qapReviewerAttachments()
+    End Function
+    <DataObjectMethod(DataObjectMethodType.Select)> _
+    Public Shared Function qapReviewerAttachmentsSelectList(ByVal StartRowIndex As Integer, ByVal MaximumRows As Integer, ByVal OrderBy As String, ByVal SearchState As Boolean, ByVal SearchText As String, ByVal RequestNo As Int32) As List(Of SIS.QAP.qapReviewerAttachments)
+      Dim Results As List(Of SIS.QAP.qapReviewerAttachments) = Nothing
+      Using Con As SqlConnection = New SqlConnection(SIS.SYS.SQLDatabase.DBCommon.GetConnectionString())
+        Using Cmd As SqlCommand = Con.CreateCommand()
+          If OrderBy = String.Empty Then OrderBy = "SerialNo DESC"
+          Cmd.CommandType = CommandType.StoredProcedure
+          If SearchState Then
+            Cmd.CommandText = "spqapReviewerAttachmentsSelectListSearch"
+            SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@KeyWord", SqlDbType.NVarChar, 250, SearchText)
+          Else
+            Cmd.CommandText = "spqapReviewerAttachmentsSelectListFilteres"
+						SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@Filter_RequestNo",SqlDbType.Int,10, IIf(RequestNo = Nothing, 0,RequestNo))
+          End If
+          SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@StartRowIndex", SqlDbType.Int, -1, StartRowIndex)
+          SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@MaximumRows", SqlDbType.Int, -1, MaximumRows)
+          SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@LoginID", SqlDbType.NvarChar, 9, HttpContext.Current.Session("LoginID"))
+          SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@OrderBy", SqlDbType.NVarChar, 50, OrderBy)
+          Cmd.Parameters.Add("@RecordCount", SqlDbType.Int)
+          Cmd.Parameters("@RecordCount").Direction = ParameterDirection.Output
+          RecordCount = -1
+          Results = New List(Of SIS.QAP.qapReviewerAttachments)()
+          Con.Open()
+          Dim Reader As SqlDataReader = Cmd.ExecuteReader()
+          While (Reader.Read())
+            Results.Add(New SIS.QAP.qapReviewerAttachments(Reader))
+          End While
+          Reader.Close()
+          RecordCount = Cmd.Parameters("@RecordCount").Value
+        End Using
+      End Using
+      Return Results
+    End Function
+    Public Shared Function qapReviewerAttachmentsSelectCount(ByVal SearchState As Boolean, ByVal SearchText As String, ByVal RequestNo As Int32) As Integer
+      Return RecordCount
+    End Function
+    <DataObjectMethod(DataObjectMethodType.Select)> _
+    Public Shared Function qapReviewerAttachmentsGetByID(ByVal RequestNo As Int32, ByVal SerialNo As Int32) As SIS.QAP.qapReviewerAttachments
+      Dim Results As SIS.QAP.qapReviewerAttachments = Nothing
+      Using Con As SqlConnection = New SqlConnection(SIS.SYS.SQLDatabase.DBCommon.GetConnectionString())
+        Using Cmd As SqlCommand = Con.CreateCommand()
+          Cmd.CommandType = CommandType.StoredProcedure
+          Cmd.CommandText = "spqapAttachmentsSelectByID"
+          SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@RequestNo",SqlDbType.Int,RequestNo.ToString.Length, RequestNo)
+          SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@SerialNo",SqlDbType.Int,SerialNo.ToString.Length, SerialNo)
+          SIS.SYS.SQLDatabase.DBCommon.AddDBParameter(Cmd, "@LoginID", SqlDbType.NvarChar, 9, HttpContext.Current.Session("LoginID"))
+          Con.Open()
+          Dim Reader As SqlDataReader = Cmd.ExecuteReader()
+					If Reader.Read() Then
+						Results = New SIS.QAP.qapReviewerAttachments(Reader)
+					End If
+					Reader.Close()
+        End Using
+      End Using
+      Return Results
+    End Function
+    'Select By ID One Record Filtered Overloaded GetByID
+    <DataObjectMethod(DataObjectMethodType.Select)> _
+    Public Shared Function qapReviewerAttachmentsGetByID(ByVal RequestNo As Int32, ByVal SerialNo As Int32, ByVal Filter_RequestNo As Int32) As SIS.QAP.qapReviewerAttachments
+      Dim Results As SIS.QAP.qapReviewerAttachments = SIS.QAP.qapReviewerAttachments.qapReviewerAttachmentsGetByID(RequestNo, SerialNo)
+      Return Results
+    End Function
+    <DataObjectMethod(DataObjectMethodType.Insert, True)> _
+    Public Shared Function qapReviewerAttachmentsInsert(ByVal Record As SIS.QAP.qapReviewerAttachments) As SIS.QAP.qapReviewerAttachments
+      Dim _Rec As SIS.QAP.qapReviewerAttachments = SIS.QAP.qapReviewerAttachments.qapReviewerAttachmentsGetNewRecord()
+      With _Rec
+        .RequestNo = Record.RequestNo
+        .Description = Record.Description
+        .FileName = Record.FileName
+        .DiskFile = Record.DiskFile
+        .StatusID = 2
+      End With
+      Return SIS.QAP.qapReviewerAttachments.InsertData(_Rec)
+    End Function
+    <DataObjectMethod(DataObjectMethodType.Update, True)> _
+    Public Shared Function qapReviewerAttachmentsUpdate(ByVal Record As SIS.QAP.qapReviewerAttachments) As SIS.QAP.qapReviewerAttachments
+      Dim _Rec As SIS.QAP.qapReviewerAttachments = SIS.QAP.qapReviewerAttachments.qapReviewerAttachmentsGetByID(Record.RequestNo, Record.SerialNo)
+      With _Rec
+        .Description = Record.Description
+        .FileName = Record.FileName
+        .DiskFile = Record.DiskFile
+        .StatusID = Record.StatusID
+      End With
+      Return SIS.QAP.qapReviewerAttachments.UpdateData(_Rec)
+    End Function
+    Public Sub New(ByVal Reader As SqlDataReader)
+      MyBase.New(Reader)
+    End Sub
+    Public Sub New()
+    End Sub
+  End Class
+End Namespace
