@@ -25,8 +25,8 @@ Partial Class EF_qapRequestsReview
 				Dim oReq As SIS.QAP.qapAttachments = New SIS.QAP.qapAttachments
 				oReq.RequestNo = RequestNo
 				oReq.Description = .FileName
-				oReq.FileName = .FileName
-				oReq.DiskFile = tmpPath & "\" & tmpName
+        oReq.FileName = String.Concat(.FileName.Split(IO.Path.GetInvalidFileNameChars()))
+        oReq.DiskFile = tmpPath & "\" & tmpName
 				oReq.StatusID = 2
 				SIS.QAP.qapAttachments.InsertData(oReq)
 				'Revert Status=1 to Superseeded

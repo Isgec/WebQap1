@@ -205,8 +205,8 @@ Namespace SIS.QAP
 				Case "AR"
 					oMsg.Subject = "QAP Request Returned by Approver: " & oRE.RequestNo
 				Case "AA"
-					oMsg.Subject = "QAP Request Approved by Approver: " & oRE.RequestNo
-			End Select
+          oMsg.Subject = "QAP Request Released by Approver: " & oRE.RequestNo
+      End Select
 
 			Dim sb As New StringBuilder
 			With sb
@@ -214,8 +214,8 @@ Namespace SIS.QAP
 				If MailEvent <> "AA" Then
 					.AppendLine("<tr><td colspan=""2"" style=""color:red"" align=""center""><h3><b>QAP Request -Returned</b></h2></td></tr>")
 				Else
-					.AppendLine("<tr><td colspan=""2"" align=""center""><h3><b>QAP Request -Approved</b></h2></td></tr>")
-				End If
+          .AppendLine("<tr><td colspan=""2"" align=""center""><h3><b>QAP Request</b></h2></td></tr>")
+        End If
 				'Main Execution
 				.AppendLine("<tr><td bgcolor=""lightgray""><b>Request No.</b></td><td>" & oRE.RequestNo & "</td></tr>")
 				.AppendLine("<tr><td bgcolor=""lightgray""><b>Document Type</b></td><td>" & oRE.FK_QAP_Requests_DocumentTypeID.DocumentName & "</td></tr>")
@@ -250,8 +250,9 @@ Namespace SIS.QAP
 				End If
 				If MailEvent = "AA" Then
 					Try
-						.AppendLine("<tr><td><b>Approver Remark</b></td><td>" & oRE.ApproverRemarks & "</td></tr>")
-					Catch ex As Exception
+            .AppendLine("<tr><td><b>Approver Remark</b></td><td>" & oRE.ApproverRemarks & "</td></tr>")
+            .AppendLine("<tr><td><b>Approver Remark</b></td><td>NOTE: For Document Released Category Refer QAP. </td></tr>")
+          Catch ex As Exception
 					End Try
 				End If
 				.AppendLine("</table>")
@@ -280,8 +281,8 @@ Namespace SIS.QAP
 				If aErr.Count > 0 Then
 					Header = Header & "<table>"
 					Header = Header & "<tr><td style=""color: red""><i><b>"
-					Header = Header & "NOTE: DCR Alert could not be delivered to following recipient(s), Please update their E-Mail ID in HRMIS."
-					Header = Header & "</b></i></td></tr>"
+          Header = Header & "NOTE: Alert could not be delivered to following recipient(s), Please update their E-Mail ID in HRMIS."
+          Header = Header & "</b></i></td></tr>"
 					For Each Err As String In aErr
 						Header = Header & "<tr><td color=""red""><i>"
 						Header = Header & Err

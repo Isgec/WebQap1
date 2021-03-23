@@ -17,8 +17,8 @@ Partial Class filedownload
 			Dim oFl As SIS.QAP.qapAttachments = SIS.QAP.qapAttachments.qapAttachmentsGetByID(docPK, filePK)
 			If IO.File.Exists(oFl.DiskFile) Then
 				Response.Clear()
-				Response.AppendHeader("content-disposition", "attachment; filename=" & oFl.FileName & """")
-				Response.ContentType = SIS.SYS.Utilities.ApplicationSpacific.ContentType(oFl.FileName)
+        Response.AppendHeader("content-disposition", "attachment; filename=" & String.Concat(oFl.FileName.Split(IO.Path.GetInvalidFileNameChars())))
+        Response.ContentType = SIS.SYS.Utilities.ApplicationSpacific.ContentType(oFl.FileName)
 				Response.WriteFile(oFl.DiskFile)
 				Response.End()
 			End If
